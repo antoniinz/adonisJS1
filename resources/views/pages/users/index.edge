@@ -1,0 +1,29 @@
+<h1>Uživatelé</h1>
+
+@if(flashMessages.has('success'))
+  <p style="color: green">{{ flashMessages.get('success') }}</p>
+@end
+
+<p><a href="/users/create">+ Přidat uživatele</a></p>
+
+<table border="1" cellpadding="6">
+  <thead>
+    <tr><th>ID</th><th>Jméno</th><th>E-mail</th><th>Akce</th></tr>
+  </thead>
+  <tbody>
+    @each(user in users)
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.fullName }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <a href="/users/{{ user.id }}/edit">Upravit</a>
+          <form method="POST" action="/users/{{ user.id }}/delete" style="display:inline">
+            {{ csrfField() }}
+            <button type="submit">Smazat</button>
+          </form>
+        </td>
+      </tr>
+    @end
+  </tbody>
+</table>

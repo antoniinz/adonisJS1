@@ -1,0 +1,21 @@
+<h1>Upravit uživatele</h1>
+
+@if(flashMessages.has('error'))
+  <p style="color: red">{{ flashMessages.get('error') }}</p>
+@end
+
+<form method="POST" action="/users/{{ user.id }}">
+  {{ csrfField() }}
+
+  <p>
+    <input name="fullName" value="{{ user.fullName }}">
+    @inputError('fullName') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
+  </p>
+  <p>
+    <input name="email" type="email" value="{{ user.email }}">
+    @inputError('email') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
+  </p>
+
+  <button type="submit">Uložit</button>
+  <a href="/users">Zpět</a>
+</form>

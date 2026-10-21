@@ -1,0 +1,25 @@
+<h1>Nový uživatel</h1>
+
+@if(flashMessages.has('error'))
+  <p style="color: red">{{ flashMessages.get('error') }}</p>
+@end
+
+<form method="POST" action="/users">
+  {{ csrfField() }}
+
+  <p>
+    <input name="fullName" placeholder="Jméno" value="{{ flashMessages.get('fullName', '') }}">
+    @inputError('fullName') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
+  </p>
+  <p>
+    <input name="email" type="email" placeholder="E-mail" value="{{ flashMessages.get('email', '') }}">
+    @inputError('email') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
+  </p>
+  <p>
+    <input name="password" type="password" placeholder="Heslo (min. 8 znaků)">
+    @inputError('password') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
+  </p>
+
+  <button type="submit">Uložit</button>
+  <a href="/users">Zpět</a>
+</form>
