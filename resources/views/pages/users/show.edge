@@ -1,0 +1,28 @@
+@usersLayout()
+  <a class="back" href="/users">‹ Uživatelé</a>
+
+  <div class="profile">
+    <div class="avatar avatar-xl">{{ (user.fullName || user.email).charAt(0).toUpperCase() }}</div>
+    <h2>{{ user.fullName || user.email }}</h2>
+    <span class="sub">{{ user.email }}</span>
+  </div>
+
+  <div class="group">
+    <div class="row"><span>ID</span><span class="value">{{ user.id }}</span></div>
+    <div class="row"><span>Jméno</span><span class="value">{{ user.fullName || '—' }}</span></div>
+    <div class="row"><span>E-mail</span><span class="value">{{ user.email }}</span></div>
+    <div class="row"><span>Vytvořen</span><span class="value">{{ user.createdAt ? user.createdAt.toFormat('d. M. yyyy HH:mm') : '—' }}</span></div>
+    <div class="row"><span>Upraven</span><span class="value">{{ user.updatedAt ? user.updatedAt.toFormat('d. M. yyyy HH:mm') : '—' }}</span></div>
+  </div>
+
+  <div class="stack">
+    <a class="btn btn-primary btn-block" href="/users/{{ user.id }}/edit">Upravit</a>
+  </div>
+
+  <div class="group gap">
+    <form method="POST" action="/users/{{ user.id }}/delete" onsubmit="return confirm('Opravdu smazat tohoto uživatele?')">
+      {{ csrfField() }}
+      <button class="danger-btn" type="submit">Smazat uživatele</button>
+    </form>
+  </div>
+@end

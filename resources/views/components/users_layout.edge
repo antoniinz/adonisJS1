@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Správa uživatelů</title>
+  <style>
+    :root{--bg:#f2f2f7;--card:#fff;--text:#1c1c1e;--muted:#8e8e93;--sep:rgba(60,60,67,.16);--fill:rgba(118,118,128,.12);--btn:#1c1c1e;--btn-text:#fff;--danger:#ff3b30;--ok-bg:rgba(52,199,89,.16);--ok:#248a3d;--err-bg:rgba(255,59,48,.12);--err:#d70015}
+    @media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--text:#fff;--muted:#8e8e93;--sep:rgba(84,84,88,.6);--fill:rgba(118,118,128,.24);--btn:#fff;--btn-text:#000;--ok-bg:rgba(48,209,88,.18);--ok:#30d158;--err-bg:rgba(255,69,58,.18);--err:#ff453a}}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    .bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--sep)}
+    .bar-inner{max-width:720px;margin:0 auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:600}
+    .nav a{margin-left:20px;color:var(--muted);font-size:15px}
+    .nav a:hover{color:var(--text)}
+    .wrap{max-width:720px;margin:0 auto;padding:24px 20px 60px}
+    .head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:18px}
+    h1{margin:0;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.02em}
+    .sub{display:block;color:var(--muted);font-size:15px}
+    .back{display:inline-block;color:var(--muted);font-size:15px;margin-bottom:10px}
+    .back:hover{color:var(--text)}
+    .toast{padding:12px 16px;border-radius:12px;margin-bottom:16px;font-size:15px}
+    .toast-ok{background:var(--ok-bg);color:var(--ok)}
+    .toast-err{background:var(--err-bg);color:var(--err)}
+    .search{display:flex;gap:8px;margin-bottom:18px}
+    .search input{flex:1;min-width:0;border:0;background:var(--fill);color:var(--text);border-radius:10px;padding:9px 14px;font-size:17px;font-family:inherit;outline:none}
+    .search input::placeholder{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:9px 18px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--fill);color:var(--text);white-space:nowrap}
+    .btn:active{opacity:.6}
+    .btn-primary{background:var(--btn);color:var(--btn-text)}
+    .btn-block{width:100%;padding:14px 18px;font-size:17px}
+    .list,.group{background:var(--card);border-radius:14px;overflow:hidden}
+    .list>*+*,.group>*+*{border-top:.5px solid var(--sep)}
+    .row{display:flex;align-items:center;gap:12px;padding:12px 16px}
+    a.row:active{background:var(--fill)}
+    a.row::after{content:"›";color:var(--muted);font-size:22px;line-height:1;margin-left:4px}
+    .grow{flex:1;min-width:0}
+    .name{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meta{color:var(--muted);font-size:15px}
+    .value{margin-left:auto;color:var(--muted);text-align:right;word-break:break-all}
+    .avatar{width:38px;height:38px;border-radius:50%;background:var(--fill);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted);flex-shrink:0}
+    .avatar-xl{width:88px;height:88px;font-size:36px;margin:0 auto 12px}
+    .empty{padding:40px 16px;text-align:center;color:var(--muted)}
+    .pager{display:flex;align-items:center;justify-content:space-between;margin-top:16px;color:var(--muted);font-size:15px}
+    .field{display:flex;align-items:center;gap:12px;padding:0 16px}
+    .field label{width:130px;flex-shrink:0}
+    .field input{flex:1;min-width:0;border:0;background:transparent;color:var(--text);font-size:17px;font-family:inherit;padding:14px 0;outline:none}
+    .field input::placeholder{color:var(--muted);opacity:.7}
+    .err{padding:8px 16px;color:var(--err);font-size:14px;background:var(--err-bg)}
+    .foot{color:var(--muted);font-size:13px;margin:8px 16px 22px}
+    .gap{margin-top:22px}
+    .stack{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+    .profile{text-align:center;margin-bottom:24px}
+    .profile h2{margin:0;font-size:24px;font-weight:700}
+    .danger-btn{display:block;width:100%;background:none;border:0;padding:14px 16px;font-size:17px;font-family:inherit;color:var(--danger);cursor:pointer;text-align:center}
+    .danger-btn:active{background:var(--fill)}
+    @media(max-width:520px){.field{flex-direction:column;align-items:stretch;gap:0}.field label{width:auto;padding-top:10px;font-size:13px;color:var(--muted)}.field input{padding:6px 0 12px}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="bar-inner">
+      <a class="brand" href="/users">Správa uživatelů</a>
+      <nav class="nav">
+        <a href="/">Úvod</a>
+        <a href="/dashboard">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    @if(flashMessages.has('success'))
+      <div class="toast toast-ok">{{ flashMessages.get('success') }}</div>
+    @end
+    @if(flashMessages.has('error'))
+      <div class="toast toast-err">{{ flashMessages.get('error') }}</div>
+    @end
+
+    {{{ await $slots.main() }}}
+  </main>
+</body>
+</html>
