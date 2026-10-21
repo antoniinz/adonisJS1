@@ -1,25 +1,59 @@
-<h1>Nový uživatel</h1>
+@usersLayout()
+  <a class="back" href="/users">‹ Uživatelé</a>
+  <div class="head">
+    <h1>Nový uživatel</h1>
+  </div>
 
-@if(flashMessages.has('error'))
-  <p style="color: red">{{ flashMessages.get('error') }}</p>
+  <form method="POST" action="/users">
+    {{ csrfField() }}
+
+    <div class="group">
+      <div class="field">
+        <label for="fullName">Jméno</label>
+        <input id="fullName" name="fullName" value="{{ flashMessages.get('fullName', '') }}" placeholder="Jan Novák">
+      </div>
+      @inputError('fullName')
+        @each(message in $messages)
+          <div class="err">{{ message }}</div>
+        @end
+      @end
+
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" value="{{ flashMessages.get('email', '') }}" placeholder="jan@example.com">
+      </div>
+      @inputError('email')
+        @each(message in $messages)
+          <div class="err">{{ message }}</div>
+        @end
+      @end
+    </div>
+
+    <div class="group gap">
+      <div class="field">
+        <label for="password">Heslo</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Min. 8 znaků">
+      </div>
+      @inputError('password')
+        @each(message in $messages)
+          <div class="err">{{ message }}</div>
+        @end
+      @end
+
+      <div class="field">
+        <label for="password_confirmation">Heslo znovu</label>
+        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password">
+      </div>
+      @inputError('password_confirmation')
+        @each(message in $messages)
+          <div class="err">{{ message }}</div>
+        @end
+      @end
+    </div>
+
+    <div class="stack">
+      <button class="btn btn-primary btn-block" type="submit">Vytvořit uživatele</button>
+      <a class="btn btn-block" href="/users">Zrušit</a>
+    </div>
+  </form>
 @end
-
-<form method="POST" action="/users">
-  {{ csrfField() }}
-
-  <p>
-    <input name="fullName" placeholder="Jméno" value="{{ flashMessages.get('fullName', '') }}">
-    @inputError('fullName') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
-  </p>
-  <p>
-    <input name="email" type="email" placeholder="E-mail" value="{{ flashMessages.get('email', '') }}">
-    @inputError('email') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
-  </p>
-  <p>
-    <input name="password" type="password" placeholder="Heslo (min. 8 znaků)">
-    @inputError('password') @each(message in $messages) <small style="color:red">{{ message }}</small> @end @end
-  </p>
-
-  <button type="submit">Uložit</button>
-  <a href="/users">Zpět</a>
-</form>

@@ -1,29 +1,51 @@
-<h1>Uživatelé</h1>
+@usersLayout()
+  <div class="head">
+    <div>
+      <h1>Uživatelé</h1>
+      <span class="sub">{{ search ? 'Nalezeno ' + found + ' z ' + total : total + ' celkem' }}</span>
+    </div>
+    <a class="btn btn-primary" href="/users/create">Nový</a>
+  </div>
 
-@if(flashMessages.has('success'))
-  <p style="color: green">{{ flashMessages.get('success') }}</p>
-@end
-
-<p><a href="/users/create">+ Přidat uživatele</a></p>
-
-<table border="1" cellpadding="6">
-  <thead>
-    <tr><th>ID</th><th>Jméno</th><th>E-mail</th><th>Akce</th></tr>
-  </thead>
-  <tbody>
-    @each(user in users)
-      <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.fullName }}</td>
-        <td>{{ user.email }}</td>
-        <td>
-          <a href="/users/{{ user.id }}/edit">Upravit</a>
-          <form method="POST" action="/users/{{ user.id }}/delete" style="display:inline">
-            {{ csrfField() }}
-            <button type="submit">Smazat</button>
-          </form>
-        </td>
-      </tr>
+  <form method="GET" action="/users" class="search">
+    <input type="search" name="search" value="{{ search }}" placeholder="Hledat podle jména nebo e-mailu">
+    @if(search)
+      <a class="btn" href="/users">Zrušit</a>
     @end
-  </tbody>
-</table>
+  </form>
+
+  @if(users.length)
+    <div class="list">
+      @each(user in users)
+        <a class="row" href="/users/{{ user.id }}">
+          <span class="avatar">{{ (user.fullName || user.email).charAt(0).toUpperCase() }}</span>
+          <span class="grow">
+            <span class="name">{{ user.fullName || user.email }}</span>
+            <span class="sub">{{ user.email }}</span>
+          </span>
+          <span class="meta">{{ user.createdAt ? user.createdAt.toFormat('d. M. yyyy') : '' }}</span>
+        </a>
+      @end
+    </div>
+
+    @if(lastPage > 1)
+      <div class="pager">
+        @if(page > 1)
+          <a class="btn" href="/users?page={{ page - 1 }}{{ qs }}">‹ Předchozí</a>
+        @else
+          <span></span>
+        @end
+        <span>Strana {{ page }} z {{ lastPage }}</span>
+        @if(page < lastPage)
+          <a class="btn" href="/users?page={{ page + 1 }}{{ qs }}">Další ›</a>
+        @else
+          <span></span>
+        @end
+      </div>
+    @end
+  @else
+    <div class="list">
+      <div class="empty">{{ search ? 'Nic jsme nenašli.' : 'Zatím tu nejsou žádní uživatelé.' }}</div>
+    </div>
+  @end
+@end
